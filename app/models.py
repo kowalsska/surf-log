@@ -253,3 +253,18 @@ class RegionalReport(BaseModel):
     observation: str
     am_report: Optional[ConditionsReport]
     pm_report: Optional[ConditionsReport]
+
+
+class WindDataInterval(BaseModel):
+    interval_local_datetime: datetime
+    speed: float
+    direction: int
+    direction_type: str
+    gust: float
+    optimal_score: int
+
+
+class WindData(BaseModel):
+    spot_name: str
+    report_local_datetime: datetime
+    intervals: List[WindDataInterval]

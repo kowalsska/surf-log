@@ -21,6 +21,7 @@ from app.models import (
     TideInterval,
     WaveInterval,
     WindInterval,
+    WindData,
 )
 
 logger = logging.getLogger(__name__)
@@ -227,3 +228,35 @@ def get_region_conditions(spot: str, days: int, now: bool) -> Optional[RegionalR
         },
     }
     return data
+
+
+def get_wind_data(spot: str, days: int) -> Optional[WindData]:
+    reg_info = get_region_info(spot)
+    if not reg_info:
+        logger.warning("Did not find region info for %s", spot)
+        return None
+
+    status, data = get_wind(spot, days, interval_hours=1)
+    if status != HTTPStatus.OK:
+        return None
+
+    logger.info(data)
+
+    intervals = []
+    for i in data.data.wind:
+        i_dttm = get_local_buoy_datetime(i.timestamp, reg_info.timezone)
+        intervals.append(
+            {
+                "interval_local_datetime": i_dttm,
+                "speed": i.speed,
+                "direction": i.direction,
+                "direction_type": i.directionType,
+                "gust": i.gust,
+                "optimal_score": i.optimalScore,
+            }
+        )
+    return {
+        "spot_name": spot,
+        "report_local_datetime": datetime.utcnow(),
+        "intervals": intervals,
+    }
