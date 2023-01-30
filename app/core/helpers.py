@@ -4,11 +4,24 @@ from http import HTTPStatus
 from typing import List, Optional
 from zoneinfo import ZoneInfo
 
-from app.core.surfline import (get_conditions, get_nearby, get_rating,
-                               get_tide, get_wave, get_wind)
+from app.core.surfline import (
+    get_conditions,
+    get_nearby,
+    get_rating,
+    get_tide,
+    get_wave,
+    get_wind,
+)
 from app.db.locations import REGIONS, SPOTS
-from app.models import (LatestBuoyData, RatingInterval, RegionalReport,
-                        RegionInfo, TideInterval, WaveInterval, WindInterval)
+from app.models import (
+    LatestBuoyData,
+    RatingInterval,
+    RegionalReport,
+    RegionInfo,
+    TideInterval,
+    WaveInterval,
+    WindInterval,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -177,16 +190,17 @@ def get_buoy_reading(spot: str) -> Optional[LatestBuoyData]:
     }
     return LatestBuoyData.parse_obj(data)
 
-def get_region_conditions(spot: str, days:int, now: bool) -> Optional[RegionalReport]:
+
+def get_region_conditions(spot: str, days: int, now: bool) -> Optional[RegionalReport]:
     reg_info = get_region_info(spot)
     if not reg_info:
         logger.warning("Did not find region info for %s", spot)
         return None
-    
+
     status, cond = get_conditions(reg_info.region_name, days)
     if status != HTTPStatus.OK:
         return None
-    
+
     day_cond = cond.data.conditions[0]
     reg_dttm = get_local_buoy_datetime(day_cond.timestamp, reg_info.timezone)
     am_cond_dttm = get_local_buoy_datetime(day_cond.am.timestamp, reg_info.timezone)
@@ -201,7 +215,7 @@ def get_region_conditions(spot: str, days:int, now: bool) -> Optional[RegionalRe
             "observation": day_cond.am.observation,
             "rating": day_cond.am.rating,
             "min_height": day_cond.am.minHeight,
-            "max_height": day_cond.am.maxHeight
+            "max_height": day_cond.am.maxHeight,
         },
         "pm_report": {
             "type": "PM",
@@ -209,7 +223,7 @@ def get_region_conditions(spot: str, days:int, now: bool) -> Optional[RegionalRe
             "observation": day_cond.pm.observation,
             "rating": day_cond.pm.rating,
             "min_height": day_cond.pm.minHeight,
-            "max_height": day_cond.pm.maxHeight
-        }
+            "max_height": day_cond.pm.maxHeight,
+        },
     }
     return data

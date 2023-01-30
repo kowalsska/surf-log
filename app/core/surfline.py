@@ -7,8 +7,14 @@ import requests
 from dotenv import load_dotenv
 
 from app.db.locations import REGIONS, SPOTS
-from app.models import (ConditionsResponse, NearbyResponse, RatingResponse,
-                        TideResponse, WaveResponse, WindResponse)
+from app.models import (
+    ConditionsResponse,
+    NearbyResponse,
+    RatingResponse,
+    TideResponse,
+    WaveResponse,
+    WindResponse,
+)
 
 logger = logging.getLogger(__name__)
 

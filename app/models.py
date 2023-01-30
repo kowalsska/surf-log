@@ -237,6 +237,7 @@ class LatestBuoyData(BaseModel):
     wave_period: int
     swells: List[Swell]
 
+
 class ConditionsReport(BaseModel):
     type: str
     report_local_datetime: datetime
